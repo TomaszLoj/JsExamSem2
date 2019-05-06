@@ -1,0 +1,16 @@
+{
+  "name": "jsexam2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "image-decode": "^1.2.2",
+    "jpeg-js": "^0.3.4"
+  }
+}
