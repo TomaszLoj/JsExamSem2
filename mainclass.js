@@ -17,10 +17,46 @@ class Ball {
         this.vector = vector;
     }
     move() {
-        this.currentPosition[0] += this.vector[0];
-        this.currentPosition[1] += this.vector[1];
+      
+        this.currentPosition = this.calculatePosition(
+            this.currentPosition,
+            this.vector
+        );
     }
-    checkWall(){}
+    calculatePosition(position, vector) {
+        let [positionY, positionX] = position.slice();
+        let [vectorY, vectorX] = vector.slice();
+
+        positionY += vectorY;
+        positionX += vectorX;
+        return [positionY, positionX];
+    }
+    getValue(position){
+        let [positionY, positionX] = position.slice();
+        return this.boardCopy[positionY][positionX];
+    }
+   
+    checkWall() {
+        let position = this.currentPosition;
+        let vector = this.vector;
+        let newVector = this.vector.slice();
+       
+        // let straight =this.calculatePosition(position, vector);
+        // let top = this.calculatePosition(position,[-1,0]);
+        // let bottom = this.calculatePosition(position, [1,0]);
+        // let left = this.calculatePosition(position, [0,-1]);
+        // let right = this.calculatePosition(position, [0,1]);
+        // console.log(this.getValue(straight));
+        // console.log(this.getValue(top));
+        // console.log(this.getValue(bottom));
+        // console.log(this.getValue(left));
+        // console.log(this.getValue(right));
+        if (condition) {
+            
+        }
+        
+        
+    }
 
     isStartPosition() {
         if (
@@ -98,20 +134,22 @@ class Drawer {
         );
     }
 }
+
 const table = new Board(board);
 const ball = new Ball(table);
 const drawer = new Drawer(table, ball);
 
 setInterval(function() {
     drawer.draw();
-    ball.checkY();
-    ball.checkWall();
+    // ball.checkY();
+    //ball.checkWall();
     ball.move();
 
     if (ball.isStartPosition === true) {
         clearInterval(this);
         console.log("Success !!!!!!!!!");
     }
+
 }, 300);
 
 // while(1){
