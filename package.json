@@ -11,6 +11,8 @@
   "dependencies": {
     "chalk": "^2.4.2",
     "image-decode": "^1.2.2",
-    "jpeg-js": "^0.3.4"
+    "jpeg-js": "^0.3.4",
+    "lodash": "^4.17.11",
+    "press-any-key": "^0.1.1"
   }
 }

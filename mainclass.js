@@ -1,6 +1,6 @@
-/*jshint esversion: 6 */
-const { board } = require("./ExamInput");
+/*jshint esversion: 8*/
 const chalk = require("chalk");
+const { board } = require("./ExamInput");
 
 class Ball {
     constructor(boardObject) {
@@ -16,46 +16,71 @@ class Ball {
     setVector(vector) {
         this.vector = vector;
     }
+
     move() {
-      
         this.currentPosition = this.calculatePosition(
             this.currentPosition,
             this.vector
         );
     }
+
     calculatePosition(position, vector) {
-        let [positionY, positionX] = position.slice();
-        let [vectorY, vectorX] = vector.slice();
+        let [positionY, positionX] = [...position];
+        let [vectorY, vectorX] = [...vector];
 
         positionY += vectorY;
         positionX += vectorX;
         return [positionY, positionX];
     }
-    getValue(position){
-        let [positionY, positionX] = position.slice();
+
+    getValueAtPosition(position) {
+        let [positionY, positionX] = position;
         return this.boardCopy[positionY][positionX];
     }
-   
+
+    isWall(position, vector) {
+        return this.getValueAtPosition(
+            this.calculatePosition(position, vector)
+        ) === "X"
+            ? true
+            : false;
+    }
+
     checkWall() {
         let position = this.currentPosition;
-        let vector = this.vector;
+        let currentVector = this.vector.slice();
+
+        let direction = {
+            straight: { vector: [...currentVector] },
+            top: { vector: [-1, 0] },
+            bottom: { vector: [1, 0] },
+            left: { vector: [0, -1] },
+            right: { vector: [0, 1] }
+        };
+
+        Object.values(direction).forEach((p, i) => {
+            p.isWall = this.isWall(position, p.vector);
+        });
+
+        return direction;
+    }
+
+    lookAround() {
         let newVector = this.vector.slice();
-       
-        // let straight =this.calculatePosition(position, vector);
-        // let top = this.calculatePosition(position,[-1,0]);
-        // let bottom = this.calculatePosition(position, [1,0]);
-        // let left = this.calculatePosition(position, [0,-1]);
-        // let right = this.calculatePosition(position, [0,1]);
-        // console.log(this.getValue(straight));
-        // console.log(this.getValue(top));
-        // console.log(this.getValue(bottom));
-        // console.log(this.getValue(left));
-        // console.log(this.getValue(right));
-        if (condition) {
+        let direction = this.checkWall();
+
+       if(direction.top.isWall || direction.bottom.isWall || direction.left.isWall || direction.right.isWall){
+            if (direction.top.isWall) newVector[0] = 1;
+            if (direction.bottom.isWall) newVector[0] = -1;
+            if (direction.left.isWall) newVector[1] = 1;
+            if (direction.right.isWall) newVector[1] = -1;
+       }else if (direction.straight.isWall) newVector= [-newVector[0],-newVector[1]];
             
-        }
         
-        
+
+        this.setVector(newVector);
+
+        return newVector;
     }
 
     isStartPosition() {
@@ -66,6 +91,7 @@ class Ball {
             return true;
         }
     }
+
     randomizer() {
         if (Math.floor(Math.random() * 2) === 1) {
             return 1;
@@ -107,25 +133,18 @@ class Drawer {
             let row = "";
             let color;
             for (let j = 0; j < this.boardCopy[i].length; j++) {
-                if (this.boardCopy[i][j] === "X") {
-                    color = chalk.bgGreen;
-                }
-                if (this.boardCopy[i][j] === "0") {
-                    color = chalk.bgBlue;
-                }
-                if (this.boardCopy[i][j] === "1") {
-                    color = chalk.bgRed;
-                }
-                if (this.boardCopy[i][j] === "Y") {
-                    color = chalk.bgYellow;
-                }
+                if (this.boardCopy[i][j] === "X") color = chalk.bgGreen;
+                if (this.boardCopy[i][j] === "0") color = chalk.bgBlue;
+                if (this.boardCopy[i][j] === "1") color = chalk.bgRed;
+                if (this.boardCopy[i][j] === "Y") color = chalk.bgYellow;
+
                 row += color(" " + this.boardCopy[i][j] + " ");
             }
             console.log(row);
         }
     }
     set1(position) {
-        this.boardCopy[position[1]][position[0]] = "1";
+        this.boardCopy[position[0]][position[1]] = "1";
     }
 
     setBoard() {
@@ -141,23 +160,24 @@ const drawer = new Drawer(table, ball);
 
 setInterval(function() {
     drawer.draw();
-    // ball.checkY();
-    //ball.checkWall();
+    ball.lookAround();
     ball.move();
+    drawer.draw();
 
-    if (ball.isStartPosition === true) {
+    if (ball.isStartPosition() === true) {
         clearInterval(this);
         console.log("Success !!!!!!!!!");
     }
-
 }, 300);
 
-// while(1){
+// for (let i = 0; i < 12; i++) {
 //     drawer.draw();
+//     //ball.checkY();
+//     ball.lookAround();
 //     ball.move();
-//     ball.checkWalls();
 
 //     if (ball.isStartPosition === true) {
+//         clearInterval(this);
 //         console.log("Success !!!!!!!!!");
 //     }
 // }
