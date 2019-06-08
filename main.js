@@ -163,4 +163,4 @@ setInterval(function() {
         clearInterval(this);
         console.log("Success !!!!!!!!!");
     }
-}, 300);
+}, 200);
